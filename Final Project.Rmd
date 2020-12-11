@@ -1,0 +1,99 @@
+---
+title: "Final Project"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+read data into R
+```{r}
+data <-read.csv("C:/Users/duyen/Dropbox/Grad Students/Grad - Duyen/Current classes/PSYC259 R Course/raw cut.csv", header=TRUE)
+```
+
+```{r}
+names(data)
+summary(data)
+```
+
+
+Variable used in this dataset:
+RacTot_12 = total racism
+xpromotionofmistrust_12 = promotion of mistrust
+xmisttrusttot_C = medical mistrust during COVID
+ChildSex = child gender
+ChildRace_Final = child race 
+incometopovertyratio_12 = family socioeconomic status
+Question: Does the relationship betweeen perceived racism and medical mistrust during COVID depend on levels of promotion of mistrust in a sample of ethnic minority youth?
+
+data cleaning: center variables and create an interaction term
+```{r}
+data$RacTot_12c <- (data$RacTot_12 - 0.5333)
+data$incometopovertyratio_12c <- (data$incometopovertyratio_12 - 2.25120)
+data$xpromotionofmistrust_12c <- (data$xpromotionofmistrust_12 - 0.1592)
+```
+
+analyze data:
+Question: Does the relationship betweeen perceived racism and medical mistrust during COVID depend on levels of preparation for bias in a sample of ethnic minority youth?
+
+Correlations among study variables
+```{r}
+cor.test(data$RacTot_12c, data$xpromotionofmistrust_12c)
+cor.test(data$RacTot_12c, data$xmisttrusttot_C)
+cor.test(data$xpromotionofmistrust_12c, data$xmisttrusttot_C)
+```
+
+Multiple regression 
+```{r}
+summary(lm(xmisttrusttot_C ~  RacTot_12c*xpromotionofmistrust_12c + ChildSex + ChildRace_Final+ incometopovertyratio_12c, data=data))
+```
+the interaction is marginally significant
+
+Graph
+```{r}
+sd(data$xpromotionofmistrust_12c, na.rm = TRUE)
+sd(data$RacTot_12c, na.rm=TRUE)
+```
+
+```{r}
+#Create a factor of the xpromotionofmistrust_12c variable used in the interaction  
+data$xpromotionofmistrust_12f <- cut(data$xpromotionofmistrust_12c,
+                      breaks=c(-Inf,-0.4782476, 0.4782476, Inf),
+                      labels=c("Low levels of promotion of mistrust", "Mean promotion of mistrust", "High levels of promotion of mistrust Mean"), na.rm = TRUE)
+
+                     
+#Create a factor of the RacTot_12c variable used in the interaction 
+data$RacTot_12f <- cut(data$RacTot_12c,
+                      breaks=c(-Inf,-0.9910166, 0.9910166, Inf),
+                      labels=c("Low levels of perceived racism", "Mean perceived racism", "High levels of perceived racism"), na.rm = TRUE)
+
+levels(data$xpromotionofmistrust_12f)
+levels(data$RacTot_12f)
+```
+
+
+```{r}
+library(ggplot2)
+
+data.clean<- na.omit(subset(data, select = c(xpromotionofmistrust_12f, xmisttrusttot_C, RacTot_12f)))
+
+graph <-ggplot(data=data.clean, aes(x=xpromotionofmistrust_12f, y=xmisttrusttot_C, group=RacTot_12f))+
+    geom_line(size=2, aes(color=RacTot_12f))+
+    ylab("Medical Mistrust")+
+    xlab("Promotion of Mistrust")+
+    ggtitle("Promotion of Mistrust and Perceived Racism as Predictors of Medical Mistrust During COVID")+
+    theme_bw()+
+    theme(text = element_text(size=12),
+        legend.text = element_text(size=12),
+        legend.direction = "horizontal",
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        legend.position="top")
+
+graph
+
+```
+
