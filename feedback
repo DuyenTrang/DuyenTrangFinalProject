@@ -1,0 +1,27 @@
+Hi! 
+See below for comments from Jake and I. We’re happy to chat about any questions you have. Thanks for a great quarter and have a nice break! 
+Amanda
+
+Code Book Comments: 
+Thanks for listing your variables at the beginning of your script. You may want to consider adding a longer description of your variables, including possible values or a range of values. 
+You may also want to include a one sentence description of your data/study
+
+
+Code Comments: 
+Nice code
+You may want to consider using scale () to center your variables. If you remove a participant or change your data, your current code will be incorrect. 
+Without data, I can’t confirm how your linear models were run. 
+Did you make gender a factor? 
+Are other variables continuous or factors? 
+For your graph, it’s fine to split your variables into factors, but you could also use ggeffects to graph the interaction or graph them continuously with ggplot
+There’s no data available to import?
+Use scale to center your data rather than your approach. Current approach may lead to errors later.
+You can wrap lm with summary to execute it all at once but I think it’s generally a good idea to store your model output and then execute summary on it. You often need your model output later for other purposes. Personal preference, though.
+Nice job creating factors out of continuous variables.
+
+
+Grade: Pass
+
+
+
+
